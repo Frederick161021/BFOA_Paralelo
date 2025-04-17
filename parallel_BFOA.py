@@ -125,7 +125,8 @@ def ejecutar_bfoa(numeroEjecuciones):
                 veryBest[0] = bestIdx
                 veryBest[1] = bestFitness
                 veryBest[2] = copy.deepcopy(poblacion[bestIdx])
-            operadorBacterial.replaceWorst(poblacion, veryBest[0])
+            # operadorBacterial.replaceWorst(poblacion, veryBest[0]) #Se cambia esta función por mutary ReemplazarPeor
+            operadorBacterial.mutarYReemplazarPeor(poblacion, veryBest[0]) #Nueva función para mutar la mejor y reemplzar la peor 
             operadorBacterial.resetListas(numeroDeBacterias)
 
         print("Very Best: ", veryBest)
@@ -160,7 +161,7 @@ def monitorear_recursos(intervalo=0.5):
 
 
 if __name__ == "__main__":
-    numeroEjecuciones = 100
+    numeroEjecuciones = 10
 
     monitoreando = True
     hilo_monitoreo = threading.Thread(target=monitorear_recursos, args=(0.5,))

@@ -46,12 +46,12 @@ class bacteria():
             bacterTmp = list(bacterTmp)
             # print("bacterTmp: ", bacterTmp)
             bacterTmp = bacterTmp[:numSec]
-            # obtiene el tama駉 de la secuencia m醩 larga
+            # obtiene el tama锟給 de la secuencia m锟絪 larga
             maxLen = 0
             for j in range(numSec):
                 if len(bacterTmp[j]) > maxLen:
                     maxLen = len(bacterTmp[j])
-                    #rellena con gaps las secuencias m醩 cortas
+                    #rellena con gaps las secuencias m锟絪 cortas
                     for t in range(numSec):
                         gap_count = maxLen - len(bacterTmp[t])
                         if gap_count > 0:
@@ -256,4 +256,43 @@ class bacteria():
         #reemplaza la bacteria peor por una copia de la mejor
         poblacion[worst] = copy.deepcopy(poblacion[best])
         
-        
+    def mutarYReemplazarPeor(self, poblacion, best_idx): #Mejora propuesta para evitar estancamientos de variabilidad
+        # Encontrar el 铆ndice de la peor bacteria
+        worst = 0
+        for i in range(len(self.tablaFitness)):
+            if self.tablaFitness[i] < self.tablaFitness[worst]:
+                worst = i
+
+        # Copiar la mejor bacteria
+        nueva_bacteria = copy.deepcopy(poblacion[best_idx])
+        nueva_bacteria = list(nueva_bacteria)
+
+        # Al azar deciidr que micro mutaci贸n se realiza
+        mutacion = random.choice(["insertar_gap", "eliminar_gap", "mover_gap"])
+        seq_idx = random.randint(0, len(nueva_bacteria) - 1)
+        secuencia = nueva_bacteria[seq_idx]
+
+        if mutacion == "insertar_gap":
+            pos = random.randint(0, len(secuencia))
+            secuencia = secuencia[:pos] + ["-"] + secuencia[pos:]
+
+        elif mutacion == "eliminar_gap":
+            if "-" in secuencia:
+                gap_pos = secuencia.index("-")
+                secuencia.pop(gap_pos)
+
+        elif mutacion == "mover_gap":
+            if "-" in secuencia:
+                old_pos = secuencia.index("-")
+                secuencia.pop(old_pos)
+                new_pos = random.randint(0, len(secuencia))
+                secuencia = secuencia[:new_pos] + ["-"] + secuencia[new_pos:]
+
+        # Guardar la mutaci贸n en la secuencia modificada
+        nueva_bacteria[seq_idx] = secuencia
+        # Reemplazar la peor bacteria con esta mutada
+        poblacion[worst] = tuple(nueva_bacteria)
+
+        # Mostrar informaci贸n 煤til (opcional para monitoreo)
+        print(f">> Se aplic贸 mutaci贸n '{mutacion}' en secuencia {seq_idx}. Reemplazando bacteria {worst} con mutaci贸n de la mejor ({best_idx}).")
+
