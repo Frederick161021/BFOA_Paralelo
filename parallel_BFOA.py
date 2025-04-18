@@ -103,7 +103,12 @@ def ejecutar_bfoa(numeroEjecuciones):
 
         for it in range(iteraciones):
             print("poblacion inicial creada - Tumbo ...")
-            operadorBacterial.tumbo(numSec, poblacion, tumbo)
+            print("Numero de it:", it)
+            if(it == 0):
+                operadorBacterial.tumbo(numSec, poblacion, tumbo)
+            else:
+                operadorBacterial.tumboModificado(numSec, poblacion)
+            # operadorBacterial.tumbo(numSec, poblacion, tumbo)
             print("Tumbo Realizado - Cuadrando ...")
             operadorBacterial.cuadra(numSec, poblacion)
             print("poblacion inicial cuadrada - Creando granLista de Pares...")
@@ -160,7 +165,7 @@ def monitorear_recursos(intervalo=0.5):
 
 
 if __name__ == "__main__":
-    numeroEjecuciones = 100
+    numeroEjecuciones = 30
 
     monitoreando = True
     hilo_monitoreo = threading.Thread(target=monitorear_recursos, args=(0.5,))

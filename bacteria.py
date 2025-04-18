@@ -17,6 +17,7 @@ class bacteria():
     def __init__(self, numBacterias):
         # manager = Manager()
         manager = Manager()
+        self.IndexBestNow = 0
         self.blosumScore = manager.list(range(numBacterias))
         self.tablaAtract = manager.list(range(numBacterias))
         self.tablaRepel = manager.list(range(numBacterias))
@@ -46,12 +47,12 @@ class bacteria():
             bacterTmp = list(bacterTmp)
             # print("bacterTmp: ", bacterTmp)
             bacterTmp = bacterTmp[:numSec]
-            # obtiene el tamaño de la secuencia más larga
+            # obtiene el tamaï¿½o de la secuencia mï¿½s larga
             maxLen = 0
             for j in range(numSec):
                 if len(bacterTmp[j]) > maxLen:
                     maxLen = len(bacterTmp[j])
-                    #rellena con gaps las secuencias más cortas
+                    #rellena con gaps las secuencias mï¿½s cortas
                     for t in range(numSec):
                         gap_count = maxLen - len(bacterTmp[t])
                         if gap_count > 0:
@@ -114,8 +115,36 @@ class bacteria():
                 bacterTmp[seqnum] = temp
                 #actualiza la poblacion
                 poblacion[i] = tuple(bacterTmp)
-        
-       
+
+    def tumboModificado(self, numSec, poblacion):
+        #inserta un gap en una posicion aleatoria de una secuencia aleatoria
+        #recorre la poblacion
+        for i in range(len(poblacion)):
+            #obtiene las secuencias de la bacteria
+            bacterTmp = poblacion[i]
+            bacterTmp = list(bacterTmp)
+            bacterTmpLong = len(bacterTmp)
+
+            fitness_actual = self.tablaFitness[i]
+            fitness_max = self.tablaFitness[self.IndexBestNow]
+
+            factor_adaptativo = max(0.01, 1 - fitness_actual / fitness_max)  # normaliza a 0â€“1
+
+            # determinar nÃºmero de cambios (mÃ¡s fitness â†’ menos cambios)
+            num_cambios = int(math.log(bacterTmpLong) * factor_adaptativo)
+            # num_cambios = min(int(math.log(bacterTmpLong) * factor_adaptativo), 10)
+
+            for _ in range(num_cambios):
+                #selecciona secuencia
+                seqnum = random.randint(0, len(bacterTmp)-1)
+                #selecciona posicion
+                pos = random.randint(0, len(bacterTmp[seqnum]))
+                part1 = bacterTmp[seqnum][:pos]
+                part2 = bacterTmp[seqnum][pos:]
+                temp = part1 + ["-"] + part2
+                bacterTmp[seqnum] = temp
+                #actualiza la poblacion
+                poblacion[i] = tuple(bacterTmp)
             
     def creaGranListaPares(self, poblacion):   
         # granListaPares = list(range(len(poblacion)))
@@ -244,6 +273,7 @@ class bacteria():
         for i in range(len(self.tablaFitness)):
             if self.tablaFitness[i] > self.tablaFitness[bestIdx]:
                 bestIdx = i
+                self.IndexBestNow = i
         print("-------------------   Best: ", bestIdx, " Fitness: ", self.tablaFitness[bestIdx], "BlosumScore ",  self.blosumScore[bestIdx], "Interaction: ", self.tablaInteraction[bestIdx], "NFE: ", globalNFE)
         return bestIdx, self.tablaFitness[bestIdx]
 
