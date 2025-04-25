@@ -17,6 +17,7 @@ class bacteria():
     def __init__(self, numBacterias):
         # manager = Manager()
         manager = Manager()
+        self.IndexBestNow = 0
         self.blosumScore = manager.list(range(numBacterias))
         self.tablaAtract = manager.list(range(numBacterias))
         self.tablaRepel = manager.list(range(numBacterias))
@@ -46,12 +47,12 @@ class bacteria():
             bacterTmp = list(bacterTmp)
             # print("bacterTmp: ", bacterTmp)
             bacterTmp = bacterTmp[:numSec]
-            # obtiene el tama�o de la secuencia m�s larga
+            # obtiene el tama�o de la secuencia m�s larga
             maxLen = 0
             for j in range(numSec):
                 if len(bacterTmp[j]) > maxLen:
                     maxLen = len(bacterTmp[j])
-                    #rellena con gaps las secuencias m�s cortas
+                    #rellena con gaps las secuencias m�s cortas
                     for t in range(numSec):
                         gap_count = maxLen - len(bacterTmp[t])
                         if gap_count > 0:
@@ -114,8 +115,36 @@ class bacteria():
                 bacterTmp[seqnum] = temp
                 #actualiza la poblacion
                 poblacion[i] = tuple(bacterTmp)
-        
-       
+
+    def tumboModificado(self, numSec, poblacion):
+        #inserta un gap en una posicion aleatoria de una secuencia aleatoria
+        #recorre la poblacion
+        for i in range(len(poblacion)):
+            #obtiene las secuencias de la bacteria
+            bacterTmp = poblacion[i]
+            bacterTmp = list(bacterTmp)
+            bacterTmpLong = len(bacterTmp)
+
+            fitness_actual = self.tablaFitness[i]
+            fitness_max = self.tablaFitness[self.IndexBestNow]
+
+            factor_adaptativo = max(0.01, 1 - fitness_actual / fitness_max)  # normaliza a 0–1
+
+            # determinar número de cambios (más fitness → menos cambios)
+            num_cambios = int(math.log(bacterTmpLong) * factor_adaptativo)
+            # num_cambios = min(int(math.log(bacterTmpLong) * factor_adaptativo), 10)
+
+            for _ in range(num_cambios):
+                #selecciona secuencia
+                seqnum = random.randint(0, len(bacterTmp)-1)
+                #selecciona posicion
+                pos = random.randint(0, len(bacterTmp[seqnum]))
+                part1 = bacterTmp[seqnum][:pos]
+                part2 = bacterTmp[seqnum][pos:]
+                temp = part1 + ["-"] + part2
+                bacterTmp[seqnum] = temp
+                #actualiza la poblacion
+                poblacion[i] = tuple(bacterTmp)
             
     def creaGranListaPares(self, poblacion):   
         # granListaPares = list(range(len(poblacion)))
@@ -244,6 +273,7 @@ class bacteria():
         for i in range(len(self.tablaFitness)):
             if self.tablaFitness[i] > self.tablaFitness[bestIdx]:
                 bestIdx = i
+                self.IndexBestNow = i
         print("-------------------   Best: ", bestIdx, " Fitness: ", self.tablaFitness[bestIdx], "BlosumScore ",  self.blosumScore[bestIdx], "Interaction: ", self.tablaInteraction[bestIdx], "NFE: ", globalNFE)
         return bestIdx, self.tablaFitness[bestIdx]
 
@@ -256,4 +286,43 @@ class bacteria():
         #reemplaza la bacteria peor por una copia de la mejor
         poblacion[worst] = copy.deepcopy(poblacion[best])
         
-        
+    def mutarYReemplazarPeor(self, poblacion, best_idx): #Mejora propuesta para evitar estancamientos de variabilidad
+        # Encontrar el índice de la peor bacteria
+        worst = 0
+        for i in range(len(self.tablaFitness)):
+            if self.tablaFitness[i] < self.tablaFitness[worst]:
+                worst = i
+
+        # Copiar la mejor bacteria
+        nueva_bacteria = copy.deepcopy(poblacion[best_idx])
+        nueva_bacteria = list(nueva_bacteria)
+
+        # Al azar deciidr que micro mutación se realiza
+        mutacion = random.choice(["insertar_gap", "eliminar_gap", "mover_gap"])
+        seq_idx = random.randint(0, len(nueva_bacteria) - 1)
+        secuencia = nueva_bacteria[seq_idx]
+
+        if mutacion == "insertar_gap":
+            pos = random.randint(0, len(secuencia))
+            secuencia = secuencia[:pos] + ["-"] + secuencia[pos:]
+
+        elif mutacion == "eliminar_gap":
+            if "-" in secuencia:
+                gap_pos = secuencia.index("-")
+                secuencia.pop(gap_pos)
+
+        elif mutacion == "mover_gap":
+            if "-" in secuencia:
+                old_pos = secuencia.index("-")
+                secuencia.pop(old_pos)
+                new_pos = random.randint(0, len(secuencia))
+                secuencia = secuencia[:new_pos] + ["-"] + secuencia[new_pos:]
+
+        # Guardar la mutación en la secuencia modificada
+        nueva_bacteria[seq_idx] = secuencia
+        # Reemplazar la peor bacteria con esta mutada
+        poblacion[worst] = tuple(nueva_bacteria)
+
+        # Mostrar información útil (opcional para monitoreo)
+        print(f">> Se aplicó mutación '{mutacion}' en secuencia {seq_idx}. Reemplazando bacteria {worst} con mutación de la mejor ({best_idx}).")
+
