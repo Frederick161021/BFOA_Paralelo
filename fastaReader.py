@@ -6,7 +6,7 @@ class fastaReader():
 
     def __init__(self):
         # self.path = "C:\\secuenciasBFOA\\multiFasta.fasta"
-        self.path = "SetB.fasta"
+        self.path = "Sets/SetC.fasta"
         
         self.seqs = list()
         self.names = list()

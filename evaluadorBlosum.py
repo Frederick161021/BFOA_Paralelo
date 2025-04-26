@@ -13,7 +13,7 @@ class evaluadorBlosum():
     def getScore(self, A, B):
         #si alguno de los dos es un gap
         if A == "-" or B == "-":
-            return -8
+            return 1
         score = self.matrix[A][B]
         return score
     

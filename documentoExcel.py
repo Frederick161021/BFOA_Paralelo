@@ -16,7 +16,7 @@ class documentoExcel():
         self.crearGrafica(self.hojaCPU, "Uso de la CPU", "Numero de Ejecucion", "Porcentaje del Uso de la CPU")
         self.crearGrafica(self.hojaNucleos, "Uso de los Nucleos de la CPU", "Numero de Ejecucion", "Porcentaje del Uso del Nucleo")
         self.crearGrafica(self.hojaMemoria, "Uso de Memoria", "Numero de Ejecucion", "Porcentaje del Uso de Memoria")
-        self.documentoExcel.save("Desempeño_Algorimto.xlsx")
+        self.documentoExcel.save("Desempeño_Algorimto_SetC.xlsx")
         print("Se creo el documento de Excel exitosamente!")
     
     def iniciliazarHojas(self):

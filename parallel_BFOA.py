@@ -22,11 +22,11 @@ def ejecutar_bfoa(numeroEjecuciones):
     resultados_memoria = []
 
     for ejecucion in range(numeroEjecuciones):
-        numeroDeBacterias = 4
-        numRandomBacteria = 1
-        iteraciones = 3
-        tumbo = 2                                             #numero de gaps a insertar
-        nado = 3
+        numeroDeBacterias = 10
+        numRandomBacteria = 3
+        iteraciones = 30
+        tumbo = 5                                             #numero de gaps a insertar
+        nado = 5
         secuencias = list()
 
         secuencias = fastaReader().seqs
@@ -107,7 +107,7 @@ def ejecutar_bfoa(numeroEjecuciones):
             if(it == 0):
                 operadorBacterial.tumbo(numSec, poblacion, tumbo)
             else:
-                operadorBacterial.tumboModificado(numSec, poblacion)
+                operadorBacterial.tumboModificado(numSec, poblacion)#Nueva función para el tumbo de forma dinamica
             # operadorBacterial.tumbo(numSec, poblacion, tumbo)
             print("Tumbo Realizado - Cuadrando ...")
             operadorBacterial.cuadra(numSec, poblacion)
@@ -166,7 +166,7 @@ def monitorear_recursos(intervalo=0.5):
 
 
 if __name__ == "__main__":
-    numeroEjecuciones = 10
+    numeroEjecuciones = 30
 
     monitoreando = True
     hilo_monitoreo = threading.Thread(target=monitorear_recursos, args=(0.5,))
