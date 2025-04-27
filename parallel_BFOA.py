@@ -24,7 +24,7 @@ def ejecutar_bfoa(numeroEjecuciones):
     for ejecucion in range(numeroEjecuciones):
         numeroDeBacterias = 4
         numRandomBacteria = 1
-        iteraciones = 3
+        iteraciones = 30
         tumbo = 2                                             #numero de gaps a insertar
         nado = 3
         secuencias = list()
